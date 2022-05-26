@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 //Colors
 
 var Colors = {
-	red:0xf25346,
+	red:0xf99341,
 	white:0xd8d0d1,
 	brown:0x59332e,
 	pink:0xF5986E,
