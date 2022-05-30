@@ -1,6 +1,8 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import vertexShader from './shaders/vertex.glsl'
+import fragmentShader from './shaders/fragment.glsl'
 //Colors
 
 let Colors = {
@@ -88,59 +90,35 @@ controls.enableDamping = true
 /**
  * Land
  */
- const Sea = function(){
-   const geom = new THREE.CylinderGeometry(600,600,800,40,10);
-   geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
-   // geom.mergeVertices();
-   const l = geom.vertices.length;
+ let Sea = function(){
 
-   this.waves = [];
+ 	var geom = new  THREE.SphereGeometry( 500, 64, 64 );
 
-   for (var i=0;i<l;i++){
-     var v = geom.vertices[i];
-     //v.y = Math.random()*30;
-     this.waves.push({y:v.y,
-                      x:v.x,
-                      z:v.z,
-                      ang: Math.random() * Math.PI * 2,
-                      amp: 5 + Math.random() * 15,
-                      speed: 0.016 + Math.random() * 0.032
-                     });
-   };
-   var mat = new THREE.MeshPhongMaterial({
-     color:Colors.blue,
-     transparent:true,
-     opacity:.8,
-     shading:THREE.FlatShading,
+ 	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 
-   });
+ 	var mat = new THREE.ShaderMaterial({
+		vertexShader: vertexShader,
+		fragmentShader: fragmentShader,
+		uniforms: {
+        uTime: { value: 0 }
+    }
+	})
 
-   this.mesh = new THREE.Mesh(geom, mat);
-   this.mesh.name = "waves";
-   this.mesh.receiveShadow = true;
+ 	this.mesh = new THREE.Mesh(geom, mat);
 
+ 	this.mesh.receiveShadow = true;
  }
 
- Sea.prototype.moveWaves = function (){
-   let verts = this.mesh.geometry.vertices;
-   let l = verts.length;
-   for (let i=0; i<l; i++){
-     let v = verts[i];
-     let vprops = this.waves[i];
-     v.x =  vprops.x + Math.cos(vprops.ang)*vprops.amp;
-     v.y = vprops.y + Math.sin(vprops.ang)*vprops.amp;
-     vprops.ang += vprops.speed*deltaTime;
-     this.mesh.geometry.verticesNeedUpdate=true;
-   }
- }
+let sea;
 
- let sea
+function createSea(){
+ 	sea = new Sea();
 
- function createSea(){
-   sea = new Sea
-   scene.add(sea.mesh);
- }
- createSea()
+ 	sea.mesh.position.y = -600;
+
+ 	scene.add(sea.mesh);
+}
+createSea()
 
 // //Cloud
 //
@@ -180,6 +158,8 @@ Cloud.prototype.rotate = function(){
     m.rotation.y+= Math.random()*.002*(i+1);
   }
 }
+
+
 
 let Sky = function(){
   this.mesh = new THREE.Object3D();
@@ -330,8 +310,7 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - lastElapsedTime
     lastElapsedTime = elapsedTime
-		//propeller.rotation.x += 0.3
-		sea.rotation.z += .005;
+		sea.mesh.rotation.z += 0.00001;
 		sky.mesh.rotation.z += .001;
 
     // Update controls
