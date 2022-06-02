@@ -1,8 +1,8 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import vertexShader from './shaders/vertex.glsl'
-import fragmentShader from './shaders/fragment.glsl'
+// import vertexShader from './shaders/vertex.glsl'
+// import fragmentShader from './shaders/fragment.glsl'
 //Colors
 
 let Colors = {
@@ -92,17 +92,24 @@ controls.enableDamping = true
  */
  let Sea = function(){
 
- 	var geom = new  THREE.SphereGeometry( 500, 64, 64 );
+ 	var geom = new  THREE.SphereGeometry( 500, 32, 32 );
 
  	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 
- 	var mat = new THREE.ShaderMaterial({
-		vertexShader: vertexShader,
-		fragmentShader: fragmentShader,
-		uniforms: {
-        uTime: { value: 0 }
-    }
-	})
+ 	// var mat = new THREE.ShaderMaterial({
+	// 	vertexShader: vertexShader,
+	// 	fragmentShader: fragmentShader,
+	// 	uniforms: {
+    //     uTime: { value: 0 }
+    // }
+	// })
+
+	const mat = new THREE.MeshPhongMaterial({
+		color:Colors.blue,
+		transparent:true,
+		opacity:.6,
+		shading:THREE.FlatShading,
+	});
 
  	this.mesh = new THREE.Mesh(geom, mat);
 
@@ -203,7 +210,7 @@ createSky()
  const meshAirplane = new THREE.Object3D();
 
 	// Create the cabin
-	const geomCockpit = new THREE.BoxGeometry(60,50,50,1,1,1);
+	const geomCockpit = new THREE.BoxGeometry(60,40,40,1,1,1);
 	const matCockpit = new THREE.MeshPhongMaterial({color:Colors.red});
 	const cockpit = new THREE.Mesh(geomCockpit, matCockpit);
 	cockpit.castShadow = true;
@@ -211,7 +218,7 @@ createSky()
 	meshAirplane.add(cockpit);
 
 	// Create the engine
-	const geomEngine = new THREE.BoxGeometry(20,50,50,1,1,1);
+	const geomEngine = new THREE.BoxGeometry(20,40,40,1,1,1);
 	const matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
 	const engine = new THREE.Mesh(geomEngine, matEngine);
 	engine.position.x = 40;
@@ -229,7 +236,7 @@ createSky()
 	meshAirplane.add(tailPlane);
 
 	// Create the wing
-	const geomSideWing = new THREE.BoxGeometry(40,8,150,1,1,1);
+	const geomSideWing = new THREE.BoxGeometry(30,8,130,1,1,1);
 	const matSideWing = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
 	const sideWing = new THREE.Mesh(geomSideWing, matSideWing);
 	sideWing.castShadow = true;
@@ -244,7 +251,7 @@ createSky()
 	propeller.receiveShadow = true;
 
 	// blades
-	const geomBlade = new THREE.BoxGeometry(1,100,20,1,1,1);
+	const geomBlade = new THREE.BoxGeometry(1,80,15,1,1,1);
 	const matBlade = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
 
 	const blade = new THREE.Mesh(geomBlade, matBlade);
@@ -310,7 +317,7 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - lastElapsedTime
     lastElapsedTime = elapsedTime
-		sea.mesh.rotation.z += 0.00001;
+		sea.mesh.rotation.z += 0.01;
 		sky.mesh.rotation.z += .001;
 
     // Update controls
