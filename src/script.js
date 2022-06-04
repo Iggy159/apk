@@ -91,19 +91,16 @@ controls.enableDamping = true
 /**
  * Land
  */
- let Sea = function(){
-
- 	var geom = new  THREE.SphereBufferGeometry( 500, 128, 128 );
-
- 	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
-
- 	var mat = new THREE.ShaderMaterial({
-		vertexShader: vertexShader,
-		fragmentShader: fragmentShader,
-		uniforms: {
+const land = {}
+land.geom = new THREE.SphereBufferGeometry( 500, 128, 128 );
+land.geom.rotateZ (0.5)
+land.mat = new THREE.ShaderMaterial({
+	vertexShader: vertexShader,
+	fragmentShader: fragmentShader,
+	uniforms: {
         uTime: { value: 0 }
     }
-	})
+})
 
 	// const mat = new THREE.MeshPhongMaterial({
 	// 	color:Colors.blue,
@@ -112,21 +109,10 @@ controls.enableDamping = true
 	// 	shading:THREE.FlatShading,
 	// });
 
- 	this.mesh = new THREE.Mesh(geom, mat);
-
- 	this.mesh.receiveShadow = true;
- }
-
-let sea;
-
-function createSea(){
- 	sea = new Sea();
-
- 	sea.mesh.position.y = -600;
-
- 	scene.add(sea.mesh);
-}
-createSea()
+land.mesh = new THREE.Mesh(land.geom, land.mat);
+//this.mesh.receiveShadow = true;
+land.mesh.position.y = -600;
+scene.add(land.mesh);
 
 // //Cloud
 //
@@ -263,7 +249,6 @@ createSky()
 	propeller.position.set(50,0,0);
 	meshAirplane.add(propeller);
 	scene.add(cockpit, engine, tailPlane, sideWing, propeller)
-
 	
 
 //Lights
@@ -331,7 +316,9 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - lastElapsedTime
     lastElapsedTime = elapsedTime
-	sea.mesh.rotation.z += 0.005;
+	land.mat.uniforms.uTime.value = elapsedTime;
+	// land.geom.rotation += 1.5
+	//land.mesh.rotation.y += 0.1
 	sky.mesh.rotation.z += .001;
 
     // Update controls

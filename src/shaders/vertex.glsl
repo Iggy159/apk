@@ -3,30 +3,32 @@
 varying float vElevation;
 uniform float uTime;
 uniform float uElevation;
-
+uniform float uElevationValleyFrequency;
+uniform float uElevationGeneral;
+uniform float uElevationGeneralFrequency;
 
 float getElevation(vec2 _position) {
 
     float elevation = 0.0;
 
     vec2 position = _position;
-    position.x -= uTime * 0.5;
+    
+    position += uTime * 50.5 * cos((position.y * 3.1415));
 
     elevation += cnoise3(vec3(
-        (position * .04) * 0.05,
+        (position * .75) * .005,
         0.0
-    )) * 3.5;
+    )) * .6;
 
     // elevation += cnoise3(vec3(
     //     (position * 7.0) * 0.09,
     //     0.0
     // )) * 0.75;
-    //
+
     // elevation += cnoise3(vec3(
     //     (position * 25.5) * 0.09,
     //     0.0
     // )) * .15;
-
 
     elevation += uElevation;
 
@@ -39,8 +41,8 @@ void main() {
 
     float elevation = getElevation(modelPosition.xz);
 
-    modelPosition.y += elevation;
-
+    modelPosition += elevation;
+    
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectionPosition = projectionMatrix * viewPosition;
 
