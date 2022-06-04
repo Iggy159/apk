@@ -1,12 +1,12 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-// import vertexShader from './shaders/vertex.glsl'
-// import fragmentShader from './shaders/fragment.glsl'
+import vertexShader from './shaders/vertex.glsl'
+import fragmentShader from './shaders/fragment.glsl'
 //Colors
 
 let Colors = {
-	red:0xf99341,
+	red:0xff5341,
 	white:0xd8d0d1,
 	brown:0x59332e,
 	pink:0xF5986E,
@@ -32,6 +32,7 @@ function handleMouseMove(event) {
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 document.addEventListener('mousemove', handleMouseMove, false)
+
 
 // Scene
 const scene = new THREE.Scene()
@@ -92,24 +93,24 @@ controls.enableDamping = true
  */
  let Sea = function(){
 
- 	var geom = new  THREE.SphereGeometry( 500, 32, 32 );
+ 	var geom = new  THREE.SphereBufferGeometry( 500, 128, 128 );
 
  	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 
- 	// var mat = new THREE.ShaderMaterial({
-	// 	vertexShader: vertexShader,
-	// 	fragmentShader: fragmentShader,
-	// 	uniforms: {
-    //     uTime: { value: 0 }
-    // }
-	// })
+ 	var mat = new THREE.ShaderMaterial({
+		vertexShader: vertexShader,
+		fragmentShader: fragmentShader,
+		uniforms: {
+        uTime: { value: 0 }
+    }
+	})
 
-	const mat = new THREE.MeshPhongMaterial({
-		color:Colors.blue,
-		transparent:true,
-		opacity:.6,
-		shading:THREE.FlatShading,
-	});
+	// const mat = new THREE.MeshPhongMaterial({
+	// 	color:Colors.blue,
+	// 	transparent:true,
+	// 	opacity:.6,
+	// 	shading:THREE.FlatShading,
+	// });
 
  	this.mesh = new THREE.Mesh(geom, mat);
 
@@ -132,7 +133,7 @@ createSea()
 let Cloud = function(){
   this.mesh = new THREE.Object3D();
   this.mesh.name = "cloud";
-  var geom = new THREE.BoxGeometry(20,20,20);
+  var geom = new THREE.BoxGeometry(30,30,30);
   var mat = new THREE.MeshPhongMaterial({
     color:Colors.white,
 
@@ -142,7 +143,7 @@ let Cloud = function(){
   var nBlocs = 3+Math.floor(Math.random()*3);
   for (var i=0; i<nBlocs; i++ ){
     var m = new THREE.Mesh(geom.clone(), mat);
-    m.position.x = i*15;
+    m.position.x = i*20;
     m.position.y = Math.random()*10;
     m.position.z = Math.random()*10;
     m.rotation.z = Math.random()*Math.PI*2;
@@ -170,7 +171,7 @@ Cloud.prototype.rotate = function(){
 
 let Sky = function(){
   this.mesh = new THREE.Object3D();
-  this.nClouds = 20;
+  this.nClouds = 40;
   this.clouds = [];
   var stepAngle = Math.PI*2 / this.nClouds;
   for(var i=0; i<this.nClouds; i++){
@@ -263,6 +264,8 @@ createSky()
 	meshAirplane.add(propeller);
 	scene.add(cockpit, engine, tailPlane, sideWing, propeller)
 
+	
+
 //Lights
 
 const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
@@ -312,24 +315,28 @@ function normalize(v,vmin,vmax,tmin, tmax){
 
 }
 
+function updatePlane() {
+
+	const targetX = normalize(mousePos.x, -1, 1, -100, 100);
+	const targetY = normalize(mousePos.y, -1, 1, 25, 175);
+
+	// update the airplane's position
+	meshAirplane.position.y = targetY;
+	meshAirplane.position.x = targetX;
+	propeller.rotation.x += 0.3;
+}
+
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - lastElapsedTime
     lastElapsedTime = elapsedTime
-		sea.mesh.rotation.z += 0.01;
-		sky.mesh.rotation.z += .001;
+	sea.mesh.rotation.z += 0.005;
+	sky.mesh.rotation.z += .001;
 
     // Update controls
-    controls.update()
-
-		const targetX = normalize(mousePos.x, -1, 1, -100, 100);
-		const targetY = normalize(mousePos.y, -1, 1, 25, 175);
-
-		// update the airplane's position
-		meshAirplane.position.y = targetY;
-		meshAirplane.position.x = targetX;
-		propeller.rotation.x += 0.3;
+    //controls.update()
+	updatePlane()
 
     // Render
     renderer.render(scene, camera)
@@ -338,14 +345,4 @@ const tick = () =>
     window.requestAnimationFrame(tick)
 }
 
-// function updatePlane() {
-//
-// 	const targetX = normalize(mousePos.x, -1, 1, -100, 100);
-// 	const targetY = normalize(mousePos.y, -1, 1, 25, 175);
-//
-// 	// update the airplane's position
-// 	meshAirplane.position.y = targetY;
-// 	meshAirplane.position.x = targetX;
-// 	propeller.rotation.x += 0.3;
-// }
 tick()
