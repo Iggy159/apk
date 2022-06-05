@@ -7,13 +7,17 @@ uniform float uElevationValleyFrequency;
 uniform float uElevationGeneral;
 uniform float uElevationGeneralFrequency;
 
+uniform float opacity;
+uniform sampler2D tDiffuse;
+varying vec2 vUv;
+
 float getElevation(vec2 _position) {
 
     float elevation = 0.0;
 
     vec2 position = _position;
     
-    position += uTime * 50.5 * cos((position.y * 3.1415));
+    position += uTime * 50.5;
 
     elevation += cnoise3(vec3(
         (position * .75) * .005,
@@ -30,7 +34,7 @@ float getElevation(vec2 _position) {
     //     0.0
     // )) * .15;
 
-    elevation += uElevation;
+    elevation -= uElevation;
 
     return elevation;
 }
@@ -41,7 +45,7 @@ void main() {
 
     float elevation = getElevation(modelPosition.xz);
 
-    modelPosition += elevation;
+    modelPosition -= elevation;
     
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectionPosition = projectionMatrix * viewPosition;
