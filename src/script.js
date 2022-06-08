@@ -6,11 +6,11 @@ import fragmentShader from './shaders/fragment.glsl'
 //Colors
 
 let Colors = {
-	red:0xff5341,
-	white:0xffffff,
+	red:0x000080,
+	white:0x999999,
 	brown:0x59332e,
 	pink:0xF5986E,
-	brownDark:0x23190f,
+	brownDark:0x000000,
 	blue:0x008000,
 }
 
@@ -91,28 +91,14 @@ controls.enableDamping = true
 /**
  * Land
  */
-const land = {}
-land.geom = new THREE.SphereBufferGeometry( 500, 128, 128 );
-land.geom.rotateZ (0.5)
-land.mat = new THREE.ShaderMaterial({
-	vertexShader: vertexShader,
-	fragmentShader: fragmentShader,
-	uniforms: {
-        uTime: { value: 0 }
-    }
-})
+const landGeometry = new THREE.PlaneGeometry( 200, 200, 1 );
+const landMaterial = new THREE.MeshBasicMaterial( {color: 0x00ff00, side: THREE.DoubleSide} );
 
-	// const mat = new THREE.MeshPhongMaterial({
-	// 	color:Colors.blue,
-	// 	transparent:true,
-	// 	opacity:.6,
-	// 	shading:THREE.FlatShading,
-	// });
-
-land.mesh = new THREE.Mesh(land.geom, land.mat);
-land.mesh.receiveShadow = true;
-land.mesh.position.y = -600;
-scene.add(land.mesh);
+const landMesh = new THREE.Mesh(landGeometry, landMaterial);
+landMesh.receiveShadow = true;
+landMesh.rotateX (Math.PI / 2)
+landMesh.position.y = 2;
+scene.add(landMesh);
 
 // //Cloud
 //
@@ -195,66 +181,98 @@ createSky()
 
 //airplane
 const AirPlane = function() {
-	
+
 	this.mesh = new THREE.Object3D();
-	
+
 	// Create the cabin
-	var geomCockpit = new THREE.BoxGeometry(60,50,50,1,1,1);
+	var geomCockpit = new THREE.BoxGeometry(135,10,80,1,1,1);
 	var matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
 	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
+	cockpit.position.y = 5;
 	cockpit.castShadow = true;
 	cockpit.receiveShadow = true;
 	this.mesh.add(cockpit);
-	
-	// Create the engine
-	var geomEngine = new THREE.BoxGeometry(20,50,50,1,1,1);
+
+	var geomCockpit = new THREE.BoxGeometry(60,1,80,1,1,1);
+	var matCockpit = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
+	cockpit.position.y = 11;
+	cockpit.position.x = 38;
+	cockpit.castShadow = true;
+	cockpit.receiveShadow = true;
+	this.mesh.add(cockpit);
+
+	// Create the cabin2
+	var geomEngine = new THREE.BoxGeometry(75,35,80,1,1,1);
 	var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
 	var engine = new THREE.Mesh(geomEngine, matEngine);
-	engine.position.x = 40;
+	engine.position.x = -30;
+	engine.position.y = 26;
 	engine.castShadow = true;
 	engine.receiveShadow = true;
 	this.mesh.add(engine);
-	
-	// Create the tail
-	var geomTailPlane = new THREE.BoxGeometry(15,20,5,1,1,1);
-	var matTailPlane = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
-	var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
-	tailPlane.position.set(-35,25,0);
-	tailPlane.castShadow = true;
-	tailPlane.receiveShadow = true;
-	this.mesh.add(tailPlane);
-	
-	// Create the wing
-	var geomSideWing = new THREE.BoxGeometry(40,8,150,1,1,1);
-	var matSideWing = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
-	var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
-	sideWing.castShadow = true;
-	sideWing.receiveShadow = true;
-	this.mesh.add(sideWing);
-	
-	// propeller
-	var geomPropeller = new THREE.BoxGeometry(20,10,10,1,1,1);
-	var matPropeller = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
-	this.propeller = new THREE.Mesh(geomPropeller, matPropeller);
-	this.propeller.castShadow = true;
-	this.propeller.receiveShadow = true;
-	
-	// blades
-	var geomBlade = new THREE.BoxGeometry(1,100,20,1,1,1);
-	var matBlade = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
-	
-	var blade = new THREE.Mesh(geomBlade, matBlade);
-	blade.position.set(8,0,0);
-	blade.castShadow = true;
-	blade.receiveShadow = true;
-	this.propeller.add(blade);
-	this.propeller.position.set(50,0,0);
-	this.mesh.add(this.propeller);
+
+	// Create the cabin3
+	var geomEngine = new THREE.BoxGeometry(135,30,80,1,1,1);
+	var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+	var engine = new THREE.Mesh(geomEngine, matEngine);
+	engine.position.y = -15;
+	engine.castShadow = true;
+	engine.receiveShadow = true;
+	this.mesh.add(engine);
+
+
+	const geometryWheel = new THREE.CylinderGeometry( 18, 18, 10, 30 );
+	const materialWheel = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
+
+	const wheelOne = new THREE.Mesh(geometryWheel, materialWheel);
+	wheelOne.position.y = -30;
+	wheelOne.position.x = 39;
+	wheelOne.position.z = 45;
+	wheelOne.rotation.x = -1.6
+	wheelOne.castShadow = true;
+	wheelOne.receiveShadow = true;
+	//this.mesh.add(this.wheelOne);
+
+	const wheelTwo = new THREE.Mesh(geometryWheel, materialWheel);
+	wheelTwo.position.y = -30;
+	wheelTwo.position.x = -35;
+	wheelTwo.position.z = 45;
+	wheelTwo.rotation.x = -1.6
+	wheelTwo.castShadow = true;
+	wheelTwo.receiveShadow = true;
+	//this.mesh.add(wheelTwo);
+
+	const wheelThree = new THREE.Mesh(geometryWheel, materialWheel);
+	wheelThree.position.y = -30;
+	wheelThree.position.x = 39;
+	wheelThree.position.z = -45;
+	wheelThree.rotation.x = -1.6
+	wheelThree.castShadow = true;
+	wheelThree.receiveShadow = true;
+	//this.mesh.add(wheelThree);
+
+	const wheelFour = new THREE.Mesh(geometryWheel, materialWheel);
+	wheelFour.position.y = -30;
+	wheelFour.position.x = -35;
+	wheelFour.position.z = -45;
+	wheelFour.rotation.x = -1.6
+	wheelFour.castShadow = true;
+	wheelFour.receiveShadow = true;
+	//this.mesh.add(wheelFour);
+
+	this.wheels = new THREE.Mesh(geometryWheel, materialWheel)
+	this.wheels.castShadow = true;
+	this.wheels.receiveShadow = true;
+
+	this.wheels.add(wheelOne, wheelTwo, wheelThree, wheelFour)
+	this.mesh.add(this.wheels)
+
 };
 
 var airplane;
 
-function createPlane(){ 
+function createPlane(){
 	airplane = new AirPlane();
 	airplane.mesh.scale.set(.25,.25,.25);
 	airplane.mesh.position.y = 15;
@@ -321,8 +339,8 @@ function updatePlane() {
 	// update the airplane's position
 	// meshAirplane.position.y = targetY;
 	// meshAirplane.position.x = targetX;
-	
-	airplane.propeller.rotation.x += 0.25;
+
+	//airplane.mesh.wheelOne.rotation.y += 0.25;
 }
 
 const tick = () =>
@@ -330,7 +348,7 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - lastElapsedTime
     lastElapsedTime = elapsedTime
-	land.mat.uniforms.uTime.value = elapsedTime;
+	//land.mat.uniforms.uTime.value = elapsedTime;
 	// land.geom.rotation += 1.5
 	//land.mesh.rotation.y += 0.1
 	sky.mesh.rotation.z += .001;
