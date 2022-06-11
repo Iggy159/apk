@@ -1,9 +1,10 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import vertexShader from './shaders/vertex.glsl'
-import fragmentShader from './shaders/fragment.glsl'
-//Colors
+// import vertexShader from './shaders/vertex.glsl'
+// import fragmentShader from './shaders/fragment.glsl'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+// //Colors
 
 let Colors = {
 	red:0x000080,
@@ -36,7 +37,7 @@ document.addEventListener('mousemove', handleMouseMove, false)
 
 // Scene
 const scene = new THREE.Scene()
-scene.background = new THREE.Color( 0xb3e6ff );
+scene.background = new THREE.Color( 0x253035 );
 /**
  * Sizes
  */
@@ -79,29 +80,47 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 // Set the position of the camera
-camera.position.x = 0;
-camera.position.z = 200;
-camera.position.y = 100;
+camera.position.x = -150;
+camera.position.z = 300;
+camera.position.y = 250;
 
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
-/**
- * Land
- */
-const landGeometry = new THREE.PlaneGeometry( 200, 200, 1 );
-const landMaterial = new THREE.MeshBasicMaterial( {color: 0x00ff00, side: THREE.DoubleSide} );
 
-const landMesh = new THREE.Mesh(landGeometry, landMaterial);
-landMesh.receiveShadow = true;
-landMesh.rotateX (Math.PI / 2)
-landMesh.position.y = 2;
-scene.add(landMesh);
+//Roads
 
-// //Cloud
+const geometry = new THREE.CylinderGeometry( 1200, 1200, 140, 64 );
+// geometry.rotateX(1.57)
+// geometry.rotateY(0.3)
+const material = new THREE.MeshStandardMaterial( {color: 0x253035} );
+const cylinder = new THREE.Mesh( geometry, material );
+cylinder.position.y = -1200
+cylinder.rotation.x = Math.PI / 2
+scene.add( cylinder );
+
+//Road
+const gltfLoader = new GLTFLoader()
 //
+// gltfLoader.load('uploads_files_2707710_ROAD.gltf', (gltf) => {
+// 	gltf.scene.scale.set(70,70,70)
+//  	gltf.scene.rotation.y = 5
+//  	//gltf.scene.center()
+//  	scene.add(gltf.scene)
+// })
+
+
+gltfLoader.load('police.gltf', (gltfCar) => {
+	gltfCar.scene.scale.set(18,18,18)
+ 	gltfCar.scene.rotation.y = -1.58
+	gltfCar.scene.position.y = 16
+ 	//gltfCar.scene.center()
+ 	scene.add(gltfCar.scene)
+})
+
+//Cloud
 let Cloud = function(){
   this.mesh = new THREE.Object3D();
   this.mesh.name = "cloud";
@@ -179,109 +198,6 @@ function createSky(){
 }
 createSky()
 
-//airplane
-const AirPlane = function() {
-
-	this.mesh = new THREE.Object3D();
-
-	// Create the cabin
-	var geomCockpit = new THREE.BoxGeometry(135,10,80,1,1,1);
-	var matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
-	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
-	cockpit.position.y = 5;
-	cockpit.castShadow = true;
-	cockpit.receiveShadow = true;
-	this.mesh.add(cockpit);
-
-	var geomCockpit = new THREE.BoxGeometry(60,1,80,1,1,1);
-	var matCockpit = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
-	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
-	cockpit.position.y = 11;
-	cockpit.position.x = 38;
-	cockpit.castShadow = true;
-	cockpit.receiveShadow = true;
-	this.mesh.add(cockpit);
-
-	// Create the cabin2
-	var geomEngine = new THREE.BoxGeometry(75,35,80,1,1,1);
-	var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
-	var engine = new THREE.Mesh(geomEngine, matEngine);
-	engine.position.x = -30;
-	engine.position.y = 26;
-	engine.castShadow = true;
-	engine.receiveShadow = true;
-	this.mesh.add(engine);
-
-	// Create the cabin3
-	var geomEngine = new THREE.BoxGeometry(135,30,80,1,1,1);
-	var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
-	var engine = new THREE.Mesh(geomEngine, matEngine);
-	engine.position.y = -15;
-	engine.castShadow = true;
-	engine.receiveShadow = true;
-	this.mesh.add(engine);
-
-
-	const geometryWheel = new THREE.CylinderGeometry( 18, 18, 10, 30 );
-	const materialWheel = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
-
-	const wheelOne = new THREE.Mesh(geometryWheel, materialWheel);
-	wheelOne.position.y = -30;
-	wheelOne.position.x = 39;
-	wheelOne.position.z = 45;
-	wheelOne.rotation.x = -1.6
-	wheelOne.castShadow = true;
-	wheelOne.receiveShadow = true;
-	//this.mesh.add(this.wheelOne);
-
-	const wheelTwo = new THREE.Mesh(geometryWheel, materialWheel);
-	wheelTwo.position.y = -30;
-	wheelTwo.position.x = -35;
-	wheelTwo.position.z = 45;
-	wheelTwo.rotation.x = -1.6
-	wheelTwo.castShadow = true;
-	wheelTwo.receiveShadow = true;
-	//this.mesh.add(wheelTwo);
-
-	const wheelThree = new THREE.Mesh(geometryWheel, materialWheel);
-	wheelThree.position.y = -30;
-	wheelThree.position.x = 39;
-	wheelThree.position.z = -45;
-	wheelThree.rotation.x = -1.6
-	wheelThree.castShadow = true;
-	wheelThree.receiveShadow = true;
-	//this.mesh.add(wheelThree);
-
-	const wheelFour = new THREE.Mesh(geometryWheel, materialWheel);
-	wheelFour.position.y = -30;
-	wheelFour.position.x = -35;
-	wheelFour.position.z = -45;
-	wheelFour.rotation.x = -1.6
-	wheelFour.castShadow = true;
-	wheelFour.receiveShadow = true;
-	//this.mesh.add(wheelFour);
-
-	this.wheels = new THREE.Mesh(geometryWheel, materialWheel)
-	this.wheels.castShadow = true;
-	this.wheels.receiveShadow = true;
-
-	this.wheels.add(wheelOne, wheelTwo, wheelThree, wheelFour)
-	this.mesh.add(this.wheels)
-
-};
-
-var airplane;
-
-function createPlane(){
-	airplane = new AirPlane();
-	airplane.mesh.scale.set(.25,.25,.25);
-	airplane.mesh.position.y = 15;
-	airplane.mesh.rotateY(-0.6)
-	scene.add(airplane.mesh);
-}
-
-createPlane()
-
 //Lights
 
 const hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
@@ -352,6 +268,7 @@ const tick = () =>
 	// land.geom.rotation += 1.5
 	//land.mesh.rotation.y += 0.1
 	sky.mesh.rotation.z += .001;
+	cylinder.rotation.y -= 0.01
 
     // Update controls
     //controls.update()
