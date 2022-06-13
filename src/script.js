@@ -32,12 +32,13 @@ function handleMouseMove(event) {
  */
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
-document.addEventListener('mousemove', handleMouseMove, false)
 
+
+document.addEventListener("keydown", onDocumentKeyDowne, false);
 
 // Scene
 const scene = new THREE.Scene()
-scene.background = new THREE.Color( 0x253035 );
+scene.background = new THREE.Color( 0x190E3C );
 /**
  * Sizes
  */
@@ -70,7 +71,7 @@ scene.fog = new THREE.Fog(0xf7d9aa, 10, 2000);
 
 aspectRatio = sizes.width / sizes.height;
 fieldOfView = 50;
-nearPlane = 10;
+nearPlane = 50;
 farPlane = 10000;
 const camera = new THREE.PerspectiveCamera(
   fieldOfView,
@@ -80,8 +81,8 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 // Set the position of the camera
-camera.position.x = -150;
-camera.position.z = 300;
+camera.position.x = -350;
+camera.position.z = 400;
 camera.position.y = 250;
 
 
@@ -91,34 +92,63 @@ controls.enableDamping = true
 
 
 //Roads
-
-const geometry = new THREE.CylinderGeometry( 1200, 1200, 140, 64 );
-// geometry.rotateX(1.57)
-// geometry.rotateY(0.3)
-const material = new THREE.MeshStandardMaterial( {color: 0x253035} );
+const geometry = new THREE.CylinderGeometry( 1200, 1200, 440, 64 );
+const material = new THREE.MeshStandardMaterial( {color: 0x15270B} );
 const cylinder = new THREE.Mesh( geometry, material );
-cylinder.position.y = -1200
+cylinder.position.y = -1203
 cylinder.rotation.x = Math.PI / 2
 scene.add( cylinder );
 
-//Road
-const gltfLoader = new GLTFLoader()
-//
-// gltfLoader.load('uploads_files_2707710_ROAD.gltf', (gltf) => {
-// 	gltf.scene.scale.set(70,70,70)
-//  	gltf.scene.rotation.y = 5
-//  	//gltf.scene.center()
-//  	scene.add(gltf.scene)
-// })
-
-
-gltfLoader.load('police.gltf', (gltfCar) => {
+//Car
+let car
+const loader = new GLTFLoader()
+loader.load('police.gltf', (gltfCar) => {
 	gltfCar.scene.scale.set(18,18,18)
  	gltfCar.scene.rotation.y = -1.58
 	gltfCar.scene.position.y = 16
  	//gltfCar.scene.center()
  	scene.add(gltfCar.scene)
+	car = gltfCar.scene
+	console.log(car)
 })
+
+
+//Wheels
+const geometryWheelOne = new THREE.CylinderGeometry( 7, 7, 4, 8 );
+const materialWheelOne = new THREE.MeshStandardMaterial( {color: 0x1a1a1a} );
+const wheelOne = new THREE.Mesh( geometryWheelOne, materialWheelOne );
+wheelOne.rotation.x = Math.PI / 2
+wheelOne.position.z = 15
+wheelOne.position.x = -27
+wheelOne.position.y = 4
+scene.add(wheelOne)
+
+const geometryWheelTwo = new THREE.CylinderGeometry( 7, 7, 4, 8 );
+const materialWheelTwo = new THREE.MeshStandardMaterial( {color: 0x1a1a1a} );
+const wheelTwo = new THREE.Mesh( geometryWheelTwo, materialWheelTwo );
+wheelTwo.rotation.x = Math.PI / 2
+wheelTwo.position.z = -15
+wheelTwo.position.x = -27
+wheelTwo.position.y = 4
+scene.add(wheelTwo)
+
+const geometryWheelThree = new THREE.CylinderGeometry( 7, 7, 4, 8 );
+const materialWheelThree = new THREE.MeshStandardMaterial( {color: 0x1a1a1a} );
+const wheelThree = new THREE.Mesh( geometryWheelThree, materialWheelThree );
+wheelThree.rotation.x = Math.PI / 2
+wheelThree.position.z = 15
+wheelThree.position.x = 17
+wheelThree.position.y = 4
+scene.add(wheelThree)
+
+const geometryWheelFour = new THREE.CylinderGeometry( 7, 7, 4, 8 );
+const materialWheelFour = new THREE.MeshStandardMaterial( {color: 0x1a1a1a} );
+const wheelFour = new THREE.Mesh( geometryWheelFour, materialWheelFour );
+wheelFour.rotation.x = Math.PI / 2
+wheelFour.position.z = -15
+wheelFour.position.x = 17
+wheelFour.position.y = 4
+scene.add(wheelFour)
 
 //Cloud
 let Cloud = function(){
@@ -235,50 +265,42 @@ renderer.shadowMap.enabled = true;
 const clock = new THREE.Clock()
 let lastElapsedTime = 0
 
-
-function normalize(v,vmin,vmax,tmin, tmax){
-
-	const nv = Math.max(Math.min(v,vmax), vmin);
-	const dv = vmax-vmin;
-	const pc = (nv-vmin)/dv;
-	const dt = tmax-tmin;
-	const tv = tmin + (pc*dt);
-	return tv;
-
+function onDocumentKeyDowne(e) {
+	if (e.keyCode === 37) {
+		car.position.z -= 5
+		wheelOne.position.z -= 5
+		wheelTwo.position.z -= 5
+		wheelThree.position.z -= 5
+		wheelFour.position.z -= 5
+	} else if(e.keyCode === 39) {
+		car.position.z += 5
+		wheelOne.position.z += 5
+		wheelTwo.position.z += 5
+		wheelThree.position.z += 5
+		wheelFour.position.z += 5
+	}
 }
 
-function updatePlane() {
+const tick = () => {
 
-	const targetX = normalize(mousePos.x, -1, 1, -100, 100);
-	const targetY = normalize(mousePos.y, -1, 1, 25, 175);
+  const elapsedTime = clock.getElapsedTime()
+  const deltaTime = elapsedTime - lastElapsedTime
+  lastElapsedTime = elapsedTime
 
-	// update the airplane's position
-	// meshAirplane.position.y = targetY;
-	// meshAirplane.position.x = targetX;
+	sky.mesh.rotation.z -= .001;
+	cylinder.rotation.y -= 0.008
 
-	//airplane.mesh.wheelOne.rotation.y += 0.25;
-}
-
-const tick = () =>
-{
-    const elapsedTime = clock.getElapsedTime()
-    const deltaTime = elapsedTime - lastElapsedTime
-    lastElapsedTime = elapsedTime
-	//land.mat.uniforms.uTime.value = elapsedTime;
-	// land.geom.rotation += 1.5
-	//land.mesh.rotation.y += 0.1
-	sky.mesh.rotation.z += .001;
-	cylinder.rotation.y -= 0.01
-
-    // Update controls
-    //controls.update()
-	updatePlane()
+	//car.rotation.y = Math.sin(90 * Math.PI / 180);
+	wheelOne.rotation.y += 0.1
+	wheelTwo.rotation.y += 0.1
+	wheelThree.rotation.y += 0.1
+	wheelFour.rotation.y += 0.1
 
     // Render
-    renderer.render(scene, camera)
+  renderer.render(scene, camera)
 
     // Call tick again on the next frame
-    window.requestAnimationFrame(tick)
+  window.requestAnimationFrame(tick)
 }
 
 tick()
